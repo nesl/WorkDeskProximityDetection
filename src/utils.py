@@ -6,6 +6,12 @@ from cerebralcortex.core.datatypes.datastream import DataPoint
 
 
 # Sensor sample range
+MAX_ACCEL = 5.0
+MIN_ACCEL = -5.0
+
+MAX_GYRO = 5.0
+MIN_GYRO = -5.0
+
 MAX_LOC_LAT = 90.0
 MIN_LOC_LAT = -90.0
 MAX_LOC_LON = 180.0

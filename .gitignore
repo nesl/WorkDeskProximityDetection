@@ -2,3 +2,4 @@ __pycache__
 *.pkl
 .ipynb_checkpoints
 *.csv
+*.npz

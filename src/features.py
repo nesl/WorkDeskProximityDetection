@@ -1,3 +1,6 @@
+'''
+This module provide feature computation functions.
+'''
 import numpy as np
 import scipy.stats as st
 from scipy.fftpack import fft

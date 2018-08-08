@@ -6,6 +6,53 @@ from typing import List
 from cerebralcortex.core.datatypes.datastream import DataPoint
 import utils
 
+def is_valid_phone_accelerometer(datapoint: DataPoint):
+    '''
+    Return True if input data point is a valid phone accelerometer data point.
+    Otherwise return False.
+    '''
+    if not isinstance(datapoint.sample, List) or len(datapoint.sample) != 3:
+        return False
+    val = datapoint.sample[0]
+    valid_x = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_ACCEL
+               and val <= utils.MAX_ACCEL)
+    val = datapoint.sample[1]
+    valid_y = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_ACCEL
+               and val <= utils.MAX_ACCEL)
+    val = datapoint.sample[2]
+    valid_z = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_ACCEL
+               and val <= utils.MAX_ACCEL)
+
+    return valid_x and valid_y and valid_z
+
+
+def is_valid_phone_gyroscope(datapoint: DataPoint):
+    '''
+    Return True if input data point is a valid phone accelerometer data point.
+    Otherwise return False.
+    '''
+    if not isinstance(datapoint.sample, List) or len(datapoint.sample) != 3:
+        return False
+
+    val = datapoint.sample[0]
+    valid_x = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_GYRO
+               and val <= utils.MAX_GYRO)
+    val = datapoint.sample[1]
+    valid_y = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_GYRO
+               and val <= utils.MAX_GYRO)
+    val = datapoint.sample[2]
+    valid_z = (isinstance(val, numbers.Real)
+               and val >= utils.MIN_GYRO
+               and val <= utils.MAX_GYRO)
+
+    return valid_x and valid_y and valid_z
+
+
 def is_valid_phone_location(datapoint: DataPoint):
     '''
     Return True if input data point is a valid phone location data point.
@@ -238,3 +285,33 @@ def validate_step_count(step_cnt_data: List[DataPoint]) -> List[DataPoint]:
             valid_step_cnt_data.append(datapoint)
 
     return valid_step_cnt_data
+
+
+def validate_accelerometer(accel_data: List[DataPoint]) -> List[DataPoint]:
+    '''
+    validate accelerometer data stream
+    :param accel_data:
+    :return: valid_accel_data
+    '''
+    valid_accel_data = []
+    for datapoint in accel_data:
+        if is_valid_phone_accelerometer(datapoint):
+            valid_accel_data.append(datapoint)
+
+    return valid_accel_data
+
+
+def validate_gyroscope(gyro_data: List[DataPoint]) -> List[DataPoint]:
+    '''
+    validate gyroscope data stream
+    :param gyro_data:
+    :return: valid_gyro_data
+    '''
+    valid_gyro_data = []
+    for datapoint in gyro_data:
+        if is_valid_phone_gyroscope(datapoint):
+            valid_gyro_data.append(datapoint)
+
+    return valid_gyro_data
+
+
