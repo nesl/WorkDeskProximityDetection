@@ -2,25 +2,24 @@
 This module provide feature computation functions.
 '''
 import numpy as np
-import scipy.stats as st
-from scipy.fftpack import fft
+from scipy import stats, fftpack
+#import fft
 
-max_val=1e6
-min_val=1e-6
+max_val = 1e6
+min_val = 1e-6
 
 
-##Features used from UCI dataset 
+# Features used from UCI dataset
+
+# Time domain features start
 def mean(data):
     '''
     Returns the mean value of the data. 
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
     val = np.mean(data)
-#    if val>max_val:
-#        val=max_val
-#    if val<min_val:
-#        val=min_val
+    
     return val
 
 
@@ -29,100 +28,37 @@ def mad(data):
     Returns the median absolute deviation (MAD)
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
     
     val = np.median(np.abs(data - np.median(data)))
-#    if val>max_val:
-#        val=max_val
-#    if val<min_val:
-#        val=min_val
     
     return val
-   
- 
-def rawenergy(data):
+
+
+def raw_energy(data):
     '''
     Returns the total energy of the data .
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
     
     total = 0
     for i in range(len(data)):
         total += data[i] ** 2
         
     val=total / len(data)
-#    if val>max_val:
-#        val=max_val
-#    if val<min_val:
-#        val=min_val
 
     return val
 
-
-def meanFreq(data):
-    if not isinstance(data, np.ndarray):
-        return None
-
-    fft_data = fft(data)
-    fft_data = fft_data.real
-    val=np.mean(fft_data)
-#    if val>max_val:
-#        val=max_val
-#    if val<min_val:
-#        val=min_val
-    
-    return val
-
-
-def bandsenergy(data):
-    '''
-    Calculated within the frequency domain.
-    Returns the total energy of the data in all frequencies.
-    '''
-    if not isinstance(data, np.ndarray):
-        return None
-
-    fft_data = fft(data)
-    n = 64
-    timestep = 0.01
-    freq = np.fft.fftfreq(n, d=timestep)
-    energy1to8 = sum(freq[0:8]**2)
-    energy9to16 = sum(freq[8:16]**2)
-    energy17to24 = sum(freq[16:24]**2)
-    energy25to32 = sum(freq[25:32]**2)
-    energy33to40 = sum(freq[32:40]**2)
-    energy41to48 = sum(freq[40:48]**2)
-    energy49to56 = sum(freq[48:56]**2)
-    energy57to64 = sum(freq[57:64]**2)
-    energy1to16 = sum(freq[0:16]**2)
-    energy17to32 = sum(freq[16:32]**2)
-    energy33to48 = sum(freq[32:48]**2)
-    energy49to64 = sum(freq[48:64]**2)
-    energy1to24 = sum(freq[0:24]**2)
-    energy25to48 = sum(freq[24:48]**2)
-
-    return [energy1to8, energy9to16, energy17to24, energy25to32, energy33to40, 
-            energy41to48, energy49to56, energy57to64, energy1to16, energy17to32,
-            energy33to48, energy49to64, energy1to24, energy25to48]
-
-
-
-##############
 
 def mini(data):
     '''
     Returns the minimum value of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
     val = np.min(data)
-    
-#    if val>max_val:
-#        val=max_val
-#    if val<min_val:
-#        val=min_val
     
     return val
 
@@ -132,14 +68,10 @@ def maxi(data):
     Returns the maximum value of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
     val = np.max(data)
-   # if val>max_val:
-   #     val=max_val
-   # if val<min_val:
-   #     val=min_val
-    
+
     return val
 
 
@@ -148,46 +80,33 @@ def median(data):
     Returns the median value of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
     val = np.median(data)
     
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
     return val
+
 
 def var(data):
     '''
     Returns the variance of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val=np.var(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.var(data)
     
     return val
 
 
 def std(data):
-    '''Returns the standard deviation of the data.
+    '''
+    Returns the standard deviation of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val=np.std(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.std(data)
     
     return val
 
@@ -197,77 +116,47 @@ def ran(data):
     Returns the range of the data.
     '''    
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val=np.max(data) - np.min(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.max(data) - np.min(data)
     
     return val
 
 
-def absmean(data):
+def abs_mean(data):
     '''
     Returns the average of the absolute values of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
-
-    data = np.absolute(data)
+        return np.nan
     
-    if(len(data))==0:
-        return 0
-    
-    val=np.sum(data) / len(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.mean(np.absolute(data))
     
     return val
 
 
-def cv(data):
+def coeff_var(data):
     '''
-    Returns the ratio between standard deviation and the mean times 100. 
+    Returns the coefficient of variation. 
     Measures signal dispersion.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
+    
+    val = stats.variation(data)
 
-    div=np.mean(data)
-    
-    if div==0:
-        return 0
-    
-    val=np.sum(data) / (div * 100)
-
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
     return val
 
 
-def skew(data):
+def skewness(data):
     '''
     Returns the skewness (3rd moment) of the data. 
     Measures asymmetry of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val=st.skew(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = stats.skew(data)
     
     return val
 
@@ -278,14 +167,9 @@ def kurtosis(data):
     Measures peakedness of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val=st.kurtosis(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = stats.kurtosis(data)
     
     return val
 
@@ -294,17 +178,11 @@ def quartile1(data):
     '''Returns the first quartile of the data.
     ''' 
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val= np.percentile(data, 25)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.percentile(data, 25)
     
     return val
-    
    
 
 def quartile3(data):
@@ -312,16 +190,12 @@ def quartile3(data):
     Returns the third quartile of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val= np.percentile(data, 75)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.percentile(data, 75)
     
     return val
+
 
 def iqr(data):
     '''
@@ -329,14 +203,9 @@ def iqr(data):
     inter quartile range. Measures dispersion.
     '''    
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    val= quartile3(data) - quartile1(data)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = quartile3(data) - quartile1(data)
     
     return val
 
@@ -347,7 +216,7 @@ def mcr(data):
     Measures how often the signal varies.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
     mean = np.mean(data)
     crossed = 0
@@ -363,58 +232,160 @@ def mcr(data):
     return crossed
 
 
-def absarea(data):
+def abs_area(data):
     '''
     Returns the absolute area, or the absolute sum of the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    total = 0
-    for i in data:
-        total += np.abs(i)
-        
-    val=total
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.sum(np.abs(data))
     
     return val
     
+
+def signal_mag_area(datax, datay, dataz):
+    '''
+    Returns the signal magnitude area across all three axes.
+    '''
+    if not isinstance(datax, np.ndarray):
+        return np.nan
+    if not isinstance(datay, np.ndarray):
+        return np.nan
+    if not isinstance(dataz, np.ndarray):
+        return np.nan
+    return abs_area(datax) + abs_area(datay) + abs_area(dataz)
+
+
+def signal_vec_mag(datax, datay, dataz):
+    '''
+    Returns the signal vector magnitude across all three axes.
+    '''
+    if not isinstance(datax, np.ndarray):
+        return np.nan
+    if not isinstance(datay, np.ndarray):
+        return np.nan
+    if not isinstance(dataz, np.ndarray):
+        return np.nan
+    val = np.mean(np.sqrt(datax**2 + datay**2 + dataz**2))
+    return val
+
+
+def percentile(data, perc):
+    '''
+    Returns the given percentile of the data.
+    '''
+    if not isinstance(data, np.ndarray):
+        return np.nan
+
+    val = np.percentile(data, perc)
+    
+    return val
+
+
+def rms(data):
+    '''
+    Returns the root mean square of the data.
+    '''
+    if not isinstance(data, np.ndarray):
+        return np.nan
+    val = np.sqrt(np.mean(data**2))
+    
+    return val
     
 
-def totalabsarea(datax, datay, dataz):
+def slope(data):
     '''
-    Returns the absolute area across all three axes.
+    Returns the slope between the first and last point.
     '''
-    if not isinstance(datax, np.ndarray):
-        return None
-    if not isinstance(datay, np.ndarray):
-        return None
-    if not isinstance(dataz, np.ndarray):
-        return None
+    if not isinstance(data, np.ndarray):
+        return np.nan
+
+    val = float(data[len(data) - 1] - data[0]) / (len(data) - 1)
+    
+    return val
 
 
-    return absarea(datax) + absarea(datay) + absarea(dataz)
+def integral(data, dt=1):
+'''
+Return the integral of data.
+'''
+    if not isinstance(data, np.ndarray):
+        return np.nan
+    val = np.trapz(data, dt)
+
+    return val
 
 
-def totalsvm(datax, datay, dataz):
+def correlation(data1, data2):
+'''
+Return pearson coefficient.
+'''
+    if not isinstance(data1, np.ndarray) or not isinstance(data2, np.ndarray):
+        return np.nan
+
+    val = np.corrcoef(data1, data2)
+
+    return val
+
+# Time domain features end
+
+
+# Frequency domain features start
+
+def dc_component(data, sampling_rate):
     '''
-    Returns the signal magnitude across all three axes.
+    Find dc component of data.
+    Sampling_rate: number of samples per second
     '''
-    if not isinstance(datax, np.ndarray):
-        return None
-    if not isinstance(datay, np.ndarray):
-        return None
-    if not isinstance(dataz, np.ndarray):
-        return None
 
-    total = 0
-    for i in range(len(datax)):
-        total += np.sqrt(datax[i] ** 2 + datay[i] ** 2 + dataz[i] ** 2)
-    return float(total) / len(datax)
+    X = fftpack.fft(data)
+    val = np.abs(X[0])
+    return val 
+    # freqs = fftpack.fftfreq(len(data), 1.0/sampling_rate)
+
+
+
+def mean_freq(data):
+    if not isinstance(data, np.ndarray):
+        return np.nan
+
+    fft_data = fftpack.fft(data)
+    fft_data = fft_data.real
+    val = np.mean(fft_data)
+    
+    return val
+
+
+def bands_energy(data):
+    '''
+    Return energy accross frequency bands.
+    '''
+    if not isinstance(data, np.ndarray):
+        return np.nan
+
+    fft_data = fftpack.fft(data)
+    n = 64
+    timestep = 0.01
+    freq = fftpack.fftfreq(n, d=timestep)
+    energy1to8 = np.sum(freq[0:8]**2)
+    energy9to16 = np.sum(freq[8:16]**2)
+    energy17to24 = np.sum(freq[16:24]**2)
+    energy25to32 = np.sum(freq[25:32]**2)
+    energy33to40 = np.sum(freq[32:40]**2)
+    energy41to48 = np.sum(freq[40:48]**2)
+    energy49to56 = np.sum(freq[48:56]**2)
+    energy57to64 = np.sum(freq[57:64]**2)
+    energy1to16 = np.sum(freq[0:16]**2)
+    energy17to32 = np.sum(freq[16:32]**2)
+    energy33to48 = np.sum(freq[32:48]**2)
+    energy49to64 = np.sum(freq[48:64]**2)
+    energy1to24 = np.sum(freq[0:24]**2)
+    energy25to48 = np.sum(freq[24:48]**2)
+
+    return [energy1to8, energy9to16, energy17to24, energy25to32, energy33to40, 
+            energy41to48, energy49to56, energy57to64, energy1to16, energy17to32,
+            energy33to48, energy49to64, energy1to24, energy25to48]
 
 
 def energy(data):
@@ -423,9 +394,9 @@ def energy(data):
     Returns the total energy of the data in all frequencies.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    fft_data = fft(data)
+    fft_data = fftpack.fft(data)
     fft_data = np.absolute(fft_data)
     
     half = int((len(fft_data) + 1) / 2)
@@ -433,12 +404,7 @@ def energy(data):
     for i in range(half):
         total += fft_data[i] ** 2
     
-    val=total
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = total
     
     return val
 
@@ -448,108 +414,53 @@ def entropy(data):
     Calculate within the frequency domain. Returns the impurity within the data.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    fft_data = fft(data)
+    X = np.abs(fftpack.fft(data))
+    
+    psd = X**2 / len(data)
+    
+    psd = psd / np.sum(psd) # Normalize psd
+    
+    ln_psd = np.log(psd)
 
-    psd = []
-    for i in fft_data:
-        i = np.absolute(i)
-        psd.append(i ** 2 / len(fft_data))
-    psd_tot = sum(psd)
-    pdf = []
-    for i in psd:
-        pdf.append(i / psd_tot)
-    total = 0
-    for i in pdf:
-        i = i + min_val
-        total += i * np.log(i)
-    
-    val=-total
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
+    val = np.sum(psd * psd_ln) * -1
+
     return val
+    
+    # for i in fft_data:
+    #     i = np.absolute(i)
+    #     psd.append(i ** 2 / len(fft_data))
+    # psd_tot = np.sum(psd)
+    # pdf = []
+    # for i in psd:
+    #     pdf.append(i / psd_tot)
+    # total = 0
+    # for i in pdf:
+    #     i = i 
+    #     total += i * np.log(i)
+    # 
+    # val = -total
+    
+    # return val
 
 
-def domfreqratio(data):
+def dom_freq_ratio(data):
     '''
     Calculated within the frequency domain. Returns the ratio between the 
     largest FFT coefficient and all FFT coefficients.
     '''
     if not isinstance(data, np.ndarray):
-        return None
+        return np.nan
 
-    fft_data = fft(data)
-    fft_data = np.absolute(fft_data)
-    div = sum(fft_data)
+    fft_data = fftpack.fft(data)
+    fft_data = np.abs(fft_data)
+    div = np.sum(fft_data)
     if div == 0:
         return 0
     
-    val=max(fft_data) / div
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
+    val = np.max(fft_data) / div
     
     return val
 
-
-def percentile(data, perc):
-    '''
-    Returns the given percentile of the data.
-    '''
-    if not isinstance(data, np.ndarray):
-        return None
-
-    val = np.percentile(data, perc)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
-    return val
-
-def rms(data):
-    '''
-    Returns the root mean square of the data.
-    '''
-
-    if not isinstance(data, np.ndarray):
-        return None
-
-    total = 0
-    for i in data:
-        total += i ** 2
-    
-    val=np.sqrt(total / len(data))
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
-    return val
-    
-
-
-def slope(data):
-    '''
-    Returns the slope between the first and last point.
-    '''
-    if not isinstance(data, np.ndarray):
-        return None
-
-    val=float(data[len(data) - 1] - data[0]) / (len(data) - 1)
-    
-    #if val>max_val:
-    #    val=max_val
-    #if val<min_val:
-    #    val=min_val
-    
-    return val
+# Frequency domain feature ends

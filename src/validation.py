@@ -93,6 +93,7 @@ def is_valid_phone_location(datapoint: DataPoint):
             and valid_bearing
             and valid_accuracy)
 
+
 def is_valid_phone_activity_type(datapoint: DataPoint):
     '''
     Return True if input data point is a valid phone activity type data point.
@@ -111,6 +112,7 @@ def is_valid_phone_activity_type(datapoint: DataPoint):
 
     return valid_type and valid_confidence
 
+
 def is_valid_phone_ambient_light(datapoint: DataPoint):
     '''
     Return True if input data point is a valid phone ambient light data point.
@@ -124,6 +126,7 @@ def is_valid_phone_ambient_light(datapoint: DataPoint):
             and val >= utils.MIN_LIGHT_INTENSITY
             and val <= utils.MAX_LIGHT_INTENSITY)
 
+
 def is_valid_phone_proximity(datapoint: DataPoint):
     '''
     Return True if input data point is a valid phone proximity data point.
@@ -136,6 +139,7 @@ def is_valid_phone_proximity(datapoint: DataPoint):
     return (isinstance(val, numbers.Real)
             and val >= utils.MIN_PROXIMITY
             and val <= utils.MAX_PROXIMITY)
+
 
 def is_valid_phone_battery(datapoint: DataPoint):
     '''
@@ -159,6 +163,7 @@ def is_valid_phone_battery(datapoint: DataPoint):
 
     return valid_level and valid_volt and valid_temp
 
+
 def is_valid_beacon(datapoint: DataPoint):
     '''
     Return True if input data point is a valid beacon data point.
@@ -181,6 +186,7 @@ def is_valid_beacon(datapoint: DataPoint):
                 and val <= utils.MAX_BLE_TX)
 
     return valid_dis and valid_rssi and valid_tx
+
 
 def is_valid_step_count(datapoint: DataPoint):
     if not isinstance(datapoint.sample, List) or len(datapoint.sample) != 1:
@@ -206,6 +212,7 @@ def validate_location(loc_data: List[DataPoint]) -> List[DataPoint]:
 
     return valid_loc_data
 
+
 def validate_activity_type(act_type_data: List[DataPoint]) -> List[DataPoint]:
     '''
     validate phone activity type data stream
@@ -221,6 +228,7 @@ def validate_activity_type(act_type_data: List[DataPoint]) -> List[DataPoint]:
 
     return valid_act_type_data
 
+
 def validate_ambient_light(light_data: List[DataPoint]) -> List[DataPoint]:
     '''
     validate phone ambient light data stream
@@ -234,6 +242,7 @@ def validate_ambient_light(light_data: List[DataPoint]) -> List[DataPoint]:
 
     return valid_light_data
 
+
 def validate_proximity(proximity_data: List[DataPoint]) -> List[DataPoint]:
     '''
     validate phone proximity data stream
@@ -246,6 +255,7 @@ def validate_proximity(proximity_data: List[DataPoint]) -> List[DataPoint]:
             valid_proximity_data.append(datapoint)
 
     return valid_proximity_data
+
 
 def validate_battery(batt_data: List[DataPoint]) -> List[DataPoint]:
     '''
@@ -313,5 +323,3 @@ def validate_gyroscope(gyro_data: List[DataPoint]) -> List[DataPoint]:
             valid_gyro_data.append(datapoint)
 
     return valid_gyro_data
-
-
