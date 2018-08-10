@@ -1,3 +1,6 @@
+'''
+This module contains utility constatns and helper functions.
+'''
 from datetime import timedelta, datetime
 from typing import List
 
