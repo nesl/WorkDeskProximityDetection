@@ -37,7 +37,7 @@ def mad(data):
 
 def raw_energy(data):
     '''
-    Returns the total energy of the data .
+    Returns the total energy of the data.
     '''
     if not isinstance(data, np.ndarray):
         return np.nan
@@ -342,19 +342,6 @@ def dc_component(data, sampling_rate):
     X = fftpack.fft(data)
     val = np.abs(X[0])
     return val 
-    # freqs = fftpack.fftfreq(len(data), 1.0/sampling_rate)
-
-
-
-def mean_freq(data):
-    if not isinstance(data, np.ndarray):
-        return np.nan
-
-    fft_data = fftpack.fft(data)
-    fft_data = fft_data.real
-    val = np.mean(fft_data)
-    
-    return val
 
 
 def bands_energy(data):
