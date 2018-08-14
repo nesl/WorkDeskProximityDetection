@@ -1,15 +1,25 @@
 '''
 This module provide feature computation functions.
 '''
+from datetime import datetime
 import numpy as np
 from scipy import stats, fftpack
-#import fft
+import utils
 
-max_val = 1e6
-min_val = 1e-6
+MAX_VAL = 1e6
+MIN_VAL = 1e-6
+
+def isWeekday(timestamp, offset):
+    day = (datetime.utcfromtimestamp(timestamp) 
+          + datetime.timedelta(second=offset))
+    return int(day.isoweekday() < 6)
 
 
-# Features used from UCI dataset
+def act_type_one_hot(act_type):
+    encoding = [0] * utils.NUM_ACT_TYPE
+    encoding[act_type] = 1
+    return encoding
+
 
 # Time domain features start
 def mean(data):
@@ -45,7 +55,7 @@ def raw_energy(data):
     total = 0
     for i in range(len(data)):
         total += data[i] ** 2
-        
+ 
     val=total / len(data)
 
     return val
@@ -307,9 +317,8 @@ def slope(data):
 
 
 def integral(data, dt=1):
-'''
-Return the integral of data.
-'''
+    ''' Returns the integral of data.
+    '''
     if not isinstance(data, np.ndarray):
         return np.nan
     val = np.trapz(data, dt)
@@ -318,9 +327,8 @@ Return the integral of data.
 
 
 def correlation(data1, data2):
-'''
-Return pearson coefficient.
-'''
+    ''' Return pearson coefficient.
+    '''
     if not isinstance(data1, np.ndarray) or not isinstance(data2, np.ndarray):
         return np.nan
 
@@ -411,7 +419,7 @@ def entropy(data):
     
     ln_psd = np.log(psd)
 
-    val = np.sum(psd * psd_ln) * -1
+    val = np.sum(psd * psd_ln) * - 1
 
     return val
     
