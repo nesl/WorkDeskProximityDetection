@@ -59,6 +59,8 @@ MIN_BLE_TX = -100.0
 MAX_STEP_CNT = 50.0
 MIN_STEP_CNT = 0
 
+INTERP_FREQ = 20.0 # 20.0 HZ
+
 
 def extract_matched_labels(labels: List, keywords: List)->List:
     """
@@ -163,3 +165,47 @@ def to_numpy_array(datapoints: List[DataPoint]):
     """
     data = [dp_to_list(dp) for dp in datapoints]
     return np.array(data)
+
+
+
+def generate_wins(seq, length, overlap):
+    '''
+    param:
+	seq: 1D numpy array
+        legnth: output window length
+        overlap: number of overlaped samples in output windows
+    Return
+        an array of output windows
+    '''
+    
+    if length >= seq.shape[0]:
+        return seq 
+    if overlap >= length:
+        print('overlap is larger than or equal to output window length.')
+        return None
+    
+    results = list()
+    
+    i = 0
+    while(i <= seq.shape[0] - length):
+        output_win = seq[i: i+length]
+        if output_win.shape[0] == length:
+            results.append(output_win)
+        i = i + (length - overlap)
+    results = np.array(results)
+
+    return results
+
+# def split_windows(wins, length, overlap=0):
+#     '''
+#     param:
+#         win: numpy array of 1D windows
+#         legnth: output window length
+#         overlap: number of overlaped samples in output windows
+#     Return:
+#         an array of output windows
+#     '''
+#     results = []
+#     for win in wins:
+#         results.append(split_window(win, length, overlap))
+#     return np.concatenate(results)

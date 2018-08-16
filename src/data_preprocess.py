@@ -11,6 +11,7 @@ import pandas as pd
 
 # Local application/library specific imports.
 from cerebralcortex.cerebralcortex import CerebralCortex
+import utils
 
 
 def resample(x, ts_new):
@@ -38,8 +39,6 @@ with open(DATA_PATH+'at_desk_groundtruth.pkl', 'rb') as f:
     AT_DESK_TIMES = pickle.load(f)
 
 
-INTERP_FREQ = 20.0 # 20.0 HZ
-
 for usr_id in USR_WORK_DAYS:
     usr_path = DATA_PATH+usr_id+'/'
     for day in USR_WORK_DAYS[usr_id]:
@@ -58,7 +57,7 @@ for usr_id in USR_WORK_DAYS:
                      gyro[-1][0], step_cnt[-1][0]])
         
         # Generate new timestamps
-        ts_new = np.arange(start_t, end_t, 1.0/INTERP_FREQ)
+        ts_new = np.arange(start_t, end_t, 1.0/utils.INTERP_FREQ)
  
         # Prepare labels for each sensor data point
         df = pd.DataFrame({'val' : np.zeros(ts_new.shape)},

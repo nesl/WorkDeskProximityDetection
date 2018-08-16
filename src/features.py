@@ -352,16 +352,17 @@ def dc_component(data, sampling_rate):
     return val 
 
 
-def bands_energy(data):
+def bands_energy(data, sampling_rate):
     '''
     Return energy accross frequency bands.
     '''
+    # TODO: This function has a bug. The computation is not correct.
     if not isinstance(data, np.ndarray):
         return np.nan
 
     fft_data = fftpack.fft(data)
     n = 64
-    timestep = 0.01
+    timestep = 1/samping_rate
     freq = fftpack.fftfreq(n, d=timestep)
     energy1to8 = np.sum(freq[0:8]**2)
     energy9to16 = np.sum(freq[8:16]**2)
