@@ -177,7 +177,9 @@ def generate_wins(seq, length, overlap):
     Return
         an array of output windows
     '''
-    
+    if len(seq.shape) != 1:
+        print('is not 1D array')
+        return None
     if length >= seq.shape[0]:
         return seq 
     if overlap >= length:

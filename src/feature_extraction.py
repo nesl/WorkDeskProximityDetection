@@ -19,7 +19,7 @@ DATA_PATH = '../data/'
 WIN_SIZE = 10 # 10s
 OVERLAP = 0 # Zero overlapping between sliding windows
 
-def feature_vector(win):
+def feature_vector(win, freq_feat=True):
     vec = list()
     # Time domain features
     vec.append(features.mean(win))
@@ -34,27 +34,32 @@ def feature_vector(win):
     vec.append(features.coeff_var(win))
     vec.append(features.skewness(win))
     vec.append(features.kurtosis(win))
-    vec.append(features.quartitle1(win))
-    vec.append(features.quartitle3(win))
+    vec.append(features.quartile1(win))
+    vec.append(features.quartile3(win))
     vec.append(features.iqr(win))
     vec.append(features.mcr(win))
-    vec.append(features.signal_vec_mag(win))
-    vec.append(features.signal_mag_area(win))
     vec.append(features.rms(win))
     vec.append(features.slope(win))
     vec.append(features.integral(win))
     # frequency domain features
-    vec.append(features.dc_componet(win))
-    vec.append(features.energy(win))
-    vec.append(features.entropy(win))
-    vec.append(feature.dom_freq_ratio(win))
+    if freq_feat:
+        vec.append(features.dc_component(win, utils.INTERP_FREQ))
+        vec.append(features.energy(win))
+        vec.append(features.entropy(win))
+        vec.append(features.dom_freq_ratio(win))
     
     return vec
 
 
-def time_features(ts, offset, t_win, overlap):
-    # TODO: time features
-    pass
+def time_features(ts, offset, sample_freq, t_win, overlap):
+    win_len = sample_freq * t_win
+    overlap_len = sample_freq * overlap * t_win
+    ts_wins = utils.generate_wins(ts, win_len, overlap_len)
+    offset_wins = utils.generate_wins(ts, win_len, overlap_len)
+    ts_features = list()
+    for ts_win, offset_win in zip(ts_wins, offset_wins):
+        ts_features.append(features.is_weekday(ts_win[0], offset_win[0]))
+    return np.array(ts_features)
 
 
 def accel_features(accel, sample_freq, t_win, overlap):
@@ -70,6 +75,9 @@ def accel_features(accel, sample_freq, t_win, overlap):
     accel_features = list() 
     for x_win, y_win, z_win in zip(accel_x_wins, accel_y_wins, accel_z_wins):
         feature_vec = feature_vector(x_win) + feature_vector(y_win) + feature_vector(z_win)
+        feature_vec.append(features.signal_vec_mag(x_win, y_win, z_win))
+        feature_vec.append(features.signal_mag_area(x_win, y_win, z_win))
+
         accel_features.append(feature_vec)
     return np.array(accel_features)
 
@@ -93,18 +101,23 @@ def gyro_features(gyro, sample_freq, t_win, overlap):
 
 
 def act_type_features(act_type, sample_freq, t_win, overlap):
-    # TODO: act type features
-    
+    win_len = sample_freq * t_win
+    overlap_len = sample_freq * overlap * t_win
+    act_type_wins = utils.generate_wins(act_type, win_len, overlap_len)
+    act_features = list()
+    for win in act_type_wins:
+        act_features.append(features.act_type_one_hot(win))
+    return np.array(act_features)
 
 
 def step_cnt_features(step_cnt, sample_freq, t_win, overlap):
 
     win_len = sample_freq * t_win
     overlap_len = sample_freq * overlap * t_win
-    step_cnt_wins = utils.generate_wins(step_cnt, win_len, overlap_len)
+    step_cnt_wins = utils.generate_wins(step_cnt[:,0], win_len, overlap_len)
     step_cnt_features = list() 
     for win in step_cnt_wins:
-        feature_vec = feature_vector(win)
+        feature_vec = feature_vector(win, False)
         step_cnt_features.append(feature_vec)
     return np.array(step_cnt_features)
 
@@ -121,14 +134,24 @@ with open(DATA_PATH+'at_desk_groundtruth.pkl', 'rb') as f:
     AT_DESK_TIMES = pickle.load(f)
 
 
-for usr_id in USR_WORK_DAYS:
-    usr_path = DATA_PATH+usr_id+'/'
-    for day in USR_WORK_DAYS[usr_id]:
-        data_fn = usr_path+'data'+day+'.npz'
-        data = np.load(data_fn)
-        ts = data['ts']
-        offset = data['offset']
-        accel = data['accel']
-        gyro = data['gyro']
-        set_cnt = data['step_cnt']
-        act_type = data['act_type']
+data_path = '/home/mperf/sandeep/Codes/data/03996723-2411-4167-b14b-eb11dfc33124/'
+
+with open(data_path+'data20180102.npz', 'rb') as f:
+    data = np.load(f)
+
+    print(time_features(data['ts'], data['offset'], 20, WIN_SIZE, OVERLAP))
+    print(accel_features(data['accel'], 20, WIN_SIZE, OVERLAP))
+    print(gyro_features(data['gyro'], 20, WIN_SIZE, OVERLAP))
+    
+    print(step_cnt_features(data['step_cnt'], 20, WIN_SIZE, OVERLAP))
+# for usr_id in USR_WORK_DAYS:
+#     usr_path = DATA_PATH+usr_id+'/'
+#     for day in USR_WORK_DAYS[usr_id]:
+#         data_fn = usr_path+'data'+day+'.npz'
+#         data = np.load(data_fn)
+#         ts = data['ts']
+#         offset = data['offset']
+#         accel = data['accel']
+#         gyro = data['gyro']
+#         set_cnt = data['step_cnt']
+#         act_type = data['act_type']

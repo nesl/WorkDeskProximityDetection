@@ -1,7 +1,7 @@
 '''
 This module provide feature computation functions.
 '''
-from datetime import datetime
+from datetime import datetime, timedelta
 import numpy as np
 from scipy import stats, fftpack
 import utils
@@ -9,15 +9,17 @@ import utils
 MAX_VAL = 1e6
 MIN_VAL = 1e-6
 
-def isWeekday(timestamp, offset):
+def is_weekday(timestamp, offset):
     day = (datetime.utcfromtimestamp(timestamp) 
-          + datetime.timedelta(second=offset))
+           + timedelta(seconds=offset))
     return int(day.isoweekday() < 6)
 
 
 def act_type_one_hot(act_type):
+    
+    most_common_type = stats.mode(act_type)
     encoding = [0] * utils.NUM_ACT_TYPE
-    encoding[act_type] = 1
+    encoding[most_common_type] = 1
     return encoding
 
 
@@ -321,7 +323,8 @@ def integral(data, dt=1):
     '''
     if not isinstance(data, np.ndarray):
         return np.nan
-    val = np.trapz(data, dt)
+    # print(data)
+    val = np.trapz(data, dx=dt)
 
     return val
 
@@ -414,31 +417,14 @@ def entropy(data):
 
     X = np.abs(fftpack.fft(data))
     
-    psd = X**2 / len(data)
-    
+    psd = X**2 / X.size
     psd = psd / np.sum(psd) # Normalize psd
     
     ln_psd = np.log(psd)
 
-    val = np.sum(psd * psd_ln) * - 1
+    val = np.sum(psd * ln_psd) * - 1
 
     return val
-    
-    # for i in fft_data:
-    #     i = np.absolute(i)
-    #     psd.append(i ** 2 / len(fft_data))
-    # psd_tot = np.sum(psd)
-    # pdf = []
-    # for i in psd:
-    #     pdf.append(i / psd_tot)
-    # total = 0
-    # for i in pdf:
-    #     i = i 
-    #     total += i * np.log(i)
-    # 
-    # val = -total
-    
-    # return val
 
 
 def dom_freq_ratio(data):
