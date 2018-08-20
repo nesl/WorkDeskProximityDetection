@@ -168,7 +168,7 @@ def to_numpy_array(datapoints: List[DataPoint]):
 
 
 
-def generate_wins(seq, length, overlap):
+def generate_wins(seq: np.ndarray, length: int, overlap: int):
     '''
     param:
 	seq: 1D numpy array

@@ -9,15 +9,34 @@ import utils
 MAX_VAL = 1e6
 MIN_VAL = 1e-6
 
+def outlier_check(val):
+    if np.isnan(val):
+        print('val is nan')
+        import pdb
+        pdb.set_trace()
+        return np.nan
+    elif val > MAX_VAL:
+        return MAX_VAL
+    elif val < MIN_VAL:
+        return MIN_VAL
+    else:
+        return val
+
 def is_weekday(timestamp, offset):
     day = (datetime.utcfromtimestamp(timestamp) 
            + timedelta(seconds=offset))
-    return int(day.isoweekday() < 6)
+    val = int(day.isoweekday() < 6)
+    return outlier_check(val)
 
 
-def act_type_one_hot(act_type):
-    
-    most_common_type = stats.mode(act_type)
+def act_type_one_hot(data):
+    if not isinstance(data, np.ndarray):
+        print('act_type_one_hot:', 'input is not numpy array')
+        return np.nan
+
+    most_common_type = int(stats.mode(data).mode[0])
+    if most_common_type > 7 or most_common_type <0:
+        print("Act type is output range.")
     encoding = [0] * utils.NUM_ACT_TYPE
     encoding[most_common_type] = 1
     return encoding
@@ -29,10 +48,11 @@ def mean(data):
     Returns the mean value of the data. 
     '''
     if not isinstance(data, np.ndarray):
+        print('mean:', 'input is not numpy array')
         return np.nan
     val = np.mean(data)
     
-    return val
+    return outlier_check(val)
 
 
 def mad(data):
@@ -40,11 +60,12 @@ def mad(data):
     Returns the median absolute deviation (MAD)
     '''
     if not isinstance(data, np.ndarray):
+        print('mad:', 'input is not numpy array')
         return np.nan
     
     val = np.median(np.abs(data - np.median(data)))
     
-    return val
+    return outlier_check(val)
 
 
 def raw_energy(data):
@@ -52,15 +73,16 @@ def raw_energy(data):
     Returns the total energy of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('raw_energy:', 'input is not numpy array')
         return np.nan
     
     total = 0
     for i in range(len(data)):
         total += data[i] ** 2
  
-    val=total / len(data)
+    val = total / len(data)
 
-    return val
+    return outlier_check(val)
 
 
 def mini(data):
@@ -68,11 +90,12 @@ def mini(data):
     Returns the minimum value of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('mini:', 'input is not numpy array')
         return np.nan
 
     val = np.min(data)
     
-    return val
+    return outlier_check(val)
 
 
 def maxi(data):
@@ -80,11 +103,12 @@ def maxi(data):
     Returns the maximum value of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('maxi:', 'input is not numpy array')
         return np.nan
 
     val = np.max(data)
 
-    return val
+    return outlier_check(val)
 
 
 def median(data):
@@ -92,11 +116,12 @@ def median(data):
     Returns the median value of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('median:', 'input is not numpy array')
         return np.nan
 
     val = np.median(data)
     
-    return val
+    return outlier_check(val)
 
 
 def var(data):
@@ -104,11 +129,12 @@ def var(data):
     Returns the variance of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('var:', 'input is not numpy array')
         return np.nan
 
     val = np.var(data)
     
-    return val
+    return outlier_check(val)
 
 
 def std(data):
@@ -116,11 +142,12 @@ def std(data):
     Returns the standard deviation of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('std:', 'input is not numpy array')
         return np.nan
 
     val = np.std(data)
     
-    return val
+    return outlier_check(val)
 
 
 def ran(data):
@@ -128,11 +155,12 @@ def ran(data):
     Returns the range of the data.
     '''    
     if not isinstance(data, np.ndarray):
+        print('ran:', 'input is not numpy array')
         return np.nan
 
     val = np.max(data) - np.min(data)
     
-    return val
+    return outlier_check(val)
 
 
 def abs_mean(data):
@@ -140,11 +168,12 @@ def abs_mean(data):
     Returns the average of the absolute values of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('abs_mean:', 'input is not numpy array')
         return np.nan
     
     val = np.mean(np.absolute(data))
     
-    return val
+    return outlier_check(val)
 
 
 def coeff_var(data):
@@ -153,11 +182,15 @@ def coeff_var(data):
     Measures signal dispersion.
     '''
     if not isinstance(data, np.ndarray):
+        print('coeff_var:', 'input is not numpy array')
         return np.nan
     
     val = stats.variation(data)
 
-    return val
+    if np.isnan(val):
+        val = MAX_VAL
+
+    return outlier_check(val)
 
 
 def skewness(data):
@@ -166,11 +199,12 @@ def skewness(data):
     Measures asymmetry of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('skewness:', 'input is not numpy array')
         return np.nan
 
     val = stats.skew(data)
     
-    return val
+    return outlier_check(val)
 
 
 def kurtosis(data):
@@ -179,22 +213,24 @@ def kurtosis(data):
     Measures peakedness of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('kurtosis:', 'input is not numpy array')
         return np.nan
 
     val = stats.kurtosis(data)
     
-    return val
+    return outlier_check(val)
 
     
 def quartile1(data):
     '''Returns the first quartile of the data.
     ''' 
     if not isinstance(data, np.ndarray):
+        print('quartile1:', 'input is not numpy array')
         return np.nan
 
     val = np.percentile(data, 25)
     
-    return val
+    return outlier_check(val)
    
 
 def quartile3(data):
@@ -202,11 +238,12 @@ def quartile3(data):
     Returns the third quartile of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('quartile3:', 'input is not numpy array')
         return np.nan
 
     val = np.percentile(data, 75)
     
-    return val
+    return outlier_check(val)
 
 
 def iqr(data):
@@ -215,11 +252,12 @@ def iqr(data):
     inter quartile range. Measures dispersion.
     '''    
     if not isinstance(data, np.ndarray):
+        print('iqr:', 'input is not numpy array')
         return np.nan
 
     val = quartile3(data) - quartile1(data)
     
-    return val
+    return outlier_check(val)
 
 
 def mcr(data):
@@ -228,6 +266,7 @@ def mcr(data):
     Measures how often the signal varies.
     '''
     if not isinstance(data, np.ndarray):
+        print('mcr:', 'input is not numpy array')
         return np.nan
 
     mean = np.mean(data)
@@ -241,7 +280,7 @@ def mcr(data):
             below = False
             crossed += 1
             
-    return crossed
+    return outlier_check(crossed)
 
 
 def abs_area(data):
@@ -249,11 +288,12 @@ def abs_area(data):
     Returns the absolute area, or the absolute sum of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('abs_area:', 'input is not numpy array')
         return np.nan
 
     val = np.sum(np.abs(data))
     
-    return val
+    return outlier_check(val)
     
 
 def signal_mag_area(datax, datay, dataz):
@@ -266,8 +306,8 @@ def signal_mag_area(datax, datay, dataz):
         return np.nan
     if not isinstance(dataz, np.ndarray):
         return np.nan
-    return abs_area(datax) + abs_area(datay) + abs_area(dataz)
-
+    val = abs_area(datax) + abs_area(datay) + abs_area(dataz)
+    return outlier_check(val)
 
 def signal_vec_mag(datax, datay, dataz):
     '''
@@ -280,7 +320,7 @@ def signal_vec_mag(datax, datay, dataz):
     if not isinstance(dataz, np.ndarray):
         return np.nan
     val = np.mean(np.sqrt(datax**2 + datay**2 + dataz**2))
-    return val
+    return outlier_check(val)
 
 
 def percentile(data, perc):
@@ -288,11 +328,12 @@ def percentile(data, perc):
     Returns the given percentile of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('percentile:', 'input is not numpy array')
         return np.nan
 
     val = np.percentile(data, perc)
     
-    return val
+    return outlier_check(val)
 
 
 def rms(data):
@@ -300,10 +341,11 @@ def rms(data):
     Returns the root mean square of the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('rms:', 'input is not numpy array')
         return np.nan
     val = np.sqrt(np.mean(data**2))
     
-    return val
+    return outlier_check(val)
     
 
 def slope(data):
@@ -311,22 +353,23 @@ def slope(data):
     Returns the slope between the first and last point.
     '''
     if not isinstance(data, np.ndarray):
+        print('slope:', 'input is not numpy array')
         return np.nan
 
     val = float(data[len(data) - 1] - data[0]) / (len(data) - 1)
     
-    return val
+    return outlier_check(val)
 
 
 def integral(data, dt=1):
     ''' Returns the integral of data.
     '''
     if not isinstance(data, np.ndarray):
+        print('integral:', 'input is not numpy array')
         return np.nan
-    # print(data)
     val = np.trapz(data, dx=dt)
 
-    return val
+    return outlier_check(val)
 
 
 def correlation(data1, data2):
@@ -337,7 +380,7 @@ def correlation(data1, data2):
 
     val = np.corrcoef(data1, data2)
 
-    return val
+    return outlier_check(val)
 
 # Time domain features end
 
@@ -349,10 +392,13 @@ def dc_component(data, sampling_rate):
     Find dc component of data.
     Sampling_rate: number of samples per second
     '''
-
+    if not isinstance(data, np.ndarray):
+        print('dc_component:', 'input is not numpy array')
+        return np.nan
+    
     X = fftpack.fft(data)
     val = np.abs(X[0])
-    return val 
+    return outlier_check(val)
 
 
 def bands_energy(data, sampling_rate):
@@ -393,6 +439,7 @@ def energy(data):
     Returns the total energy of the data in all frequencies.
     '''
     if not isinstance(data, np.ndarray):
+        print('energy:', 'input is not numpy array')
         return np.nan
 
     fft_data = fftpack.fft(data)
@@ -405,7 +452,7 @@ def energy(data):
     
     val = total
     
-    return val
+    return outlier_check(val)
 
 
 def entropy(data):
@@ -413,18 +460,23 @@ def entropy(data):
     Calculate within the frequency domain. Returns the impurity within the data.
     '''
     if not isinstance(data, np.ndarray):
+        print('entropy:', 'input is not numpy array')
         return np.nan
 
     X = np.abs(fftpack.fft(data))
     
     psd = X**2 / X.size
-    psd = psd / np.sum(psd) # Normalize psd
-    
+
+    div = np.sum(psd)
+    if div == 0.0:
+        div = MIN_VAL
+    psd = psd / div # Normalize psd
+    psd[np.where(psd==0.0)] = MIN_VAL
     ln_psd = np.log(psd)
 
     val = np.sum(psd * ln_psd) * - 1
 
-    return val
+    return outlier_check(val)
 
 
 def dom_freq_ratio(data):
@@ -433,16 +485,17 @@ def dom_freq_ratio(data):
     largest FFT coefficient and all FFT coefficients.
     '''
     if not isinstance(data, np.ndarray):
+        print('dom_freq_ratio:', 'input is not numpy array')
         return np.nan
 
     fft_data = fftpack.fft(data)
     fft_data = np.abs(fft_data)
     div = np.sum(fft_data)
-    if div == 0:
-        return 0
+    if div == 0.0:
+        div = MIN_VAL
     
     val = np.max(fft_data) / div
     
-    return val
+    return outlier_check(val)
 
 # Frequency domain feature ends
