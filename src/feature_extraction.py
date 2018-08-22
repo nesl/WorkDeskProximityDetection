@@ -51,6 +51,13 @@ def feature_vector(win, freq_feat=True):
     return vec
 
 
+def window_labels(labels, sample_freq, t_win, overlap):
+    win_len = int(sample_freq * t_win)
+    overlap_len = int(sample_freq * overlap * t_win)
+    label_wins = utils.generate_wins(labels, win_len, overlap_len)
+    return np.array(label_wins)
+
+
 def time_features(ts, offset, sample_freq, t_win, overlap):
     win_len = int(sample_freq * t_win)
     overlap_len = int(sample_freq * overlap * t_win)
@@ -151,6 +158,7 @@ def data_check(mat):
 usr_path = DATA_PATH+usr_id+'/'
 
 feat_mats = list()
+label_mats = list()
 for day in USR_WORK_DAYS[usr_id]:
     print('Creating features on '+ day)
     data_fn = usr_path+'data'+day+'.npz'
@@ -161,31 +169,42 @@ for day in USR_WORK_DAYS[usr_id]:
     gyro = data['gyro']
     step_cnt = data['step_cnt']
     act_type = data['act_type']
+    lbl = data['labels']
+    # print('Computing time features...')
+    # time_feat = time_features(ts, offset, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    # data_check(time_feat)
 
-    print('Computing time features...')
-    time_feat = time_features(ts, offset, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
-    data_check(time_feat)
+    # print('Computing accelerometer features...')
+    # accel_feat = accel_features(accel, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    # data_check(accel_feat)
+    # 
+    # print('Computing gyroscope features...')
+    # gyro_feat = gyro_features(gyro, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    # data_check(gyro_feat)
+    # 
+    # print('Computing step count features...')
+    # step_cnt_feat = step_cnt_features(step_cnt, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    # data_check(step_cnt_feat)
 
-    print('Computing accelerometer features...')
-    accel_feat = accel_features(accel, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
-    data_check(accel_feat)
-    
-    print('Computing gyroscope features...')
-    gyro_feat = gyro_features(gyro, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
-    data_check(gyro_feat)
-    
-    print('Computing step count features...')
-    step_cnt_feat = step_cnt_features(step_cnt, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
-    data_check(step_cnt_feat)
+    # print('Computing activities features...')
+    # act_type_feat = act_type_features(act_type, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    # data_check(act_type_feat)
 
-    print('Computing activities features...')
-    act_type_feat = act_type_features(act_type, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
-    data_check(act_type_feat)
+    # feat_mat = np.hstack((time_feat, accel_feat, gyro_feat, step_cnt_feat, act_type_feat))
+    # feat_mats.append(feat_mat)
 
-    feat_mat = np.hstack((time_feat, accel_feat, gyro_feat, step_cnt_feat, act_type_feat))
-    feat_mats.append(feat_mat)
+    print('Creating labels on '+day)
+    label_wins = window_labels(lbl, utils.INTERP_FREQ, WIN_SIZE, OVERLAP)
+    label_mats.append(label_wins)
 
-feat_mats = np.vstack(feat_mats)
-fn = usr_path + 'features'
+# feat_mats = np.vstack(feat_mats)
+# fn = usr_path + 'features'
+# print('Saving '+fn)
+# np.save(fn, feat_mats)
+
+label_mats = np.vstack(label_mats)
+fn = usr_path + 'labels'
 print('Saving '+fn)
-np.save(fn, feat_mats)
+np.save(fn, label_mats)
+
+
