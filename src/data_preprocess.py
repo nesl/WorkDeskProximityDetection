@@ -13,6 +13,17 @@ import pandas as pd
 from cerebralcortex.cerebralcortex import CerebralCortex
 import utils
 
+def data_filter(input_array: np.ndarray, start_hr: int, end_hr: int):
+    'Keep data rows which are between start_hr and end_hr'
+    output_array = list()
+    for row in input_array:
+        ts = row[0]
+        offset = row[2]
+        dt = datetime.utcfromtimestamp(ts) + timedelta(seconds=offset)
+        if dt.hour >= start_hr and dt.hour < end_hr:
+            output_array.append(row)
+    return np.vstack(output_array)
+
 
 def resample(x, ts_new):
     'Resamples x with freq from start_t to end_t'
@@ -67,11 +78,19 @@ for usr_id in USR_WORK_DAYS:
             df[start_t : end_t] = 1
         
         
-        accel = resample(accel, ts_new)
+        accel = data_filter(resample(accel, ts_new), 8, 20)
         offset = accel[:, 2]
-        act_type = resample(act_type, ts_new)
-        gyro = resample(gyro, ts_new)
-        step_cnt  = resample(step_cnt, ts_new)
+        act_type = data_filter(resample(act_type, ts_new), 8, 20)
+        gyro = data_filter(resample(gyro, ts_new), 8, 20)
+        step_cnt  = data_filter(resample(step_cnt, ts_new), 8, 20)
+        
+        
+        ts_new = accel[:, 0]
+        # Prepare labels for each sensor data point
+        df = pd.DataFrame({'val' : np.zeros(ts_new.shape)},
+                          index=pd.to_datetime(ts_new, unit='s'))
+        for start_t, end_t in AT_DESK_TIMES[usr_id]:
+            df[start_t : end_t] = 1
         labels = np.asarray(df.values).reshape(-1)
         
         assert(ts_new.shape[0] == accel.shape[0])
