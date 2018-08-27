@@ -22,6 +22,13 @@ def outlier_check(val):
     else:
         return val
 
+def local_hour(timestamp, offset):
+    day = (datetime.utcfromtimestamp(timestamp) 
+           + timedelta(seconds=offset))
+    val = day.hour
+    return outlier_check(val)
+    
+
 def is_weekday(timestamp, offset):
     day = (datetime.utcfromtimestamp(timestamp) 
            + timedelta(seconds=offset))
